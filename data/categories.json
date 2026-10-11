@@ -1,0 +1,13 @@
+{
+  "rules": [
+    {"category": "distraction", "pattern": "(?i)(youtube|reddit|twitter|x\\.com|facebook|instagram|tiktok|netflix|twitch|hacker news|ycombinator|mastodon|bsky|bluesky|9gag|\\bgame\\b|steam|lichess|chess\\.com)"},
+    {"category": "media",       "pattern": "(?i)(vlc|mpv|spotify|rhythmbox|audacious|plex|jellyfin|prime video)"},
+    {"category": "work",        "pattern": "(?i)(vscode|vs\\s*code|visual studio|\\bvim\\b|neovim|emacs|terminal|konsole|gnome-terminal|alacritty|ghostty|intellij|pycharm|goland|github|gitlab|stack.?overflow|localhost|127\\.0\\.0\\.1|postman|dbeaver|datagrip|docker|kubectl|terraform|gcloud|aws console|figma|notion|jira|linear|slack.*(work|dev|eng)|\\.(py|js|ts|tsx|jsx|rs|go|java|c|cpp|h|rb|sh|php|html|css|ya?ml|toml|sql)\\b|\\b(code|cursor|zed)\\s*[:—-])"},
+    {"category": "writing",     "pattern": "(?i)(docs\\.google|libreoffice|writer|obsidian|typora|markdown|wordpress|medium|substack|gmail.*compose|\\.docx|\\.odt)"},
+    {"category": "communication","pattern": "(?i)(gmail|outlook|proton|mail|slack|discord|telegram|signal|whatsapp|element|zoom|meet\\.google|teams|calendar)"},
+    {"category": "research",    "pattern": "(?i)(wikipedia|arxiv|scholar|documentation|docs\\.|developer\\.mozilla|mdn|readthedocs|wiki|stackexchange|kagi|duckduckgo|google.*search)"},
+    {"category": "system",      "pattern": "(?i)(settings|system monitor|file manager|nautilus|dolphin|thunar|software|update|installer|synaptic)"}
+  ],
+  "afk_category": "afk",
+  "fallback_category": "other"
+}

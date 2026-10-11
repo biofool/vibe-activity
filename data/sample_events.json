@@ -1,0 +1,23 @@
+{
+  "day": "2026-10-11",
+  "events": [
+    {"timestamp": "2026-10-11T08:05:00Z", "duration": 1500, "data": {"app": "ghostty", "title": "kkron: backend/app — zsh"}},
+    {"timestamp": "2026-10-11T08:30:00Z", "duration": 2700, "data": {"app": "firefox", "title": "GitHub · biofool/AIRichardMoon — Mozilla Firefox"}},
+    {"timestamp": "2026-10-11T09:15:00Z", "duration": 900, "data": {"app": "firefox", "title": "YouTube — lo-fi beats to code to — Mozilla Firefox"}},
+    {"timestamp": "2026-10-11T09:30:00Z", "duration": 3300, "data": {"app": "code", "title": "coaching.py — AIRichardMoon — Visual Studio Code"}},
+    {"timestamp": "2026-10-11T10:25:00Z", "duration": 600, "data": {"app": "slack", "title": "#engineering — Slack"}},
+    {"timestamp": "2026-10-11T10:35:00Z", "duration": 1500, "data": {"app": "firefox", "title": "SQLite FTS5 documentation — Mozilla Firefox"}},
+    {"timestamp": "2026-10-11T11:00:00Z", "duration": 2400, "data": {"app": "code", "title": "retrieval.py — AIRichardMoon — Visual Studio Code"}},
+    {"timestamp": "2026-10-11T11:40:00Z", "duration": 480, "data": {"app": "firefox", "title": "Hacker News — Mozilla Firefox"}},
+    {"timestamp": "2026-10-11T12:00:00Z", "duration": 1800, "data": {"app": "firefox", "title": "Reddit — r/linux — Mozilla Firefox"}},
+    {"timestamp": "2026-10-11T13:00:00Z", "duration": 2100, "data": {"app": "ghostty", "title": "kkron: pytest — zsh"}},
+    {"timestamp": "2026-10-11T13:35:00Z", "duration": 1500, "data": {"app": "firefox", "title": "docs.google.com — proposal draft — Mozilla Firefox"}},
+    {"timestamp": "2026-10-11T14:00:00Z", "duration": 3600, "data": {"app": "code", "title": "test_service.py — AIRichardMoon — Visual Studio Code"}},
+    {"timestamp": "2026-10-11T15:00:00Z", "duration": 1200, "data": {"app": "vlc", "title": "interview-recording.mp4 — VLC"}},
+    {"timestamp": "2026-10-11T15:20:00Z", "duration": 2400, "data": {"app": "firefox", "title": "Stack Overflow — sqlite fts5 snippet rank — Mozilla Firefox"}}
+  ],
+  "afk": [
+    {"timestamp": "2026-10-11T12:30:00Z", "duration": 1800},
+    {"timestamp": "2026-10-11T15:45:00Z", "duration": 900}
+  ]
+}
