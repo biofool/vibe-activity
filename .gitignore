@@ -5,3 +5,9 @@ data/events_*.json
 data/categorized_*.json
 data/category_cache.json
 dist/
+.env
+.env.*
+*.key
+*.pem
+credentials*.json
+service-account*.json
