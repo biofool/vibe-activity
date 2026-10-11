@@ -2,32 +2,18 @@
 
 # CLAUDE.md
 
-## Project overview
+vibe-activity — local Rize replacement. ActivityWatch → regex/LLM
+categorization → static ECharts dashboard. Stdlib-only runtime.
 
-vibe-activity — local Rize replacement. ActivityWatch events -> regex/LLM
-categorization -> static ECharts dashboard. Stdlib-only runtime.
-
-## Commands
+## Critical commands
 
 ```bash
-./run.sh [--days N] [--offline]
-python3 categorize.py --offline data/sample_events.json   # no AW needed
-python3 build_dashboard.py
-python3 -m pytest tests/
+./run.sh [--days N] [--offline]   # pipeline
+python3 -m pytest tests/          # tests
 ```
 
-## Conventions
+## Project wiki
 
-- Runtime stays stdlib-only — HTTP via urllib, no requests.
-- Category rules live in `data/categories.json`, never hardcode lists in code.
-- LLM results are cached in `data/category_cache.json`; the LLM path must
-  degrade to the fallback category on any failure (never fail silently —
-  log WARNING).
-- `data/categorized_*.json`, `data/events_*.json`, `dist/` are generated —
-  keep them gitignored.
-- `0.0.0.0` is a bind address, not a connect address.
-- **Don't trust, verify** — post-edit lint hook runs automatically
-  (`.claude/hooks/post_edit_lint.py`); findings are defects, fix them.
-  Never claim done without a command that proves it (`verify-change` skill).
-- **Automate the annoying stuff** — a process explained twice becomes a
-  hook, a `scripts/` tool, or a `.devin/skills/` entry.
+Project knowledge lives in `.devin/wiki/` — read `INDEX.md`, load only
+the page you need. Learned facts go to the owning page + an INDEX line;
+decisions append dated to `decisions.md`.
