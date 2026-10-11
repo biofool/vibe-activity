@@ -11,3 +11,5 @@ Rationale: free, fast, private; LLM only earns its keep on unknowns.
 ## 2026-10-11 — mini-wiki replaces CLAUDE.md project sections
 
 Project knowledge moved here; CLAUDE.md is now a router.
+
+- 2026-10-12 — Adversarial review (magic-compact sweep); findings ticketed in GitHub issues.
