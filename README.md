@@ -69,6 +69,23 @@ python3 build_dashboard.py
 Focus score, focus/active time, minutes-by-hour stacked bars, category
 donut, top apps, multi-day focus trend. Static file — share or host anywhere.
 
+## Tests
+
+```bash
+python3 -m pytest tests/    # requires: pip install -r requirements.txt
+```
+
+## Deploy
+
+`dist/index.html` is a self-contained static file. Open it locally or
+copy it to any static host. ECharts loads from CDN — vendor
+`echarts.min.js` into `dist/` and update the `<script src>` in
+`build_dashboard.py` for fully offline use.
+
+## License
+
+MIT — see `LICENSE`.
+
 ## Limitations
 
 - Wayland window titles need `aw-awatcher` or the Hyprland/GNOME watcher —
