@@ -32,7 +32,11 @@ def load_days() -> dict[str, dict]:
     days = {}
     for f in sorted(DATA.glob("categorized_*.json")):
         p = json.loads(f.read_text())
-        days[p.get("day", f.stem)] = p
+        day = p.get("day", f.stem)
+        if day in days:
+            log.warning("duplicate day %s in %s — keeping first", day, f.name)
+            continue
+        days[day] = p
     if not days:
         raise SystemExit("no data/categorized_*.json — run categorize.py first")
     return days
@@ -50,7 +54,10 @@ def aggregate(days: dict[str, dict]) -> dict:
             cat_min[cat] += dur
             app = ev.get("data", {}).get("app", "?")
             app_min[app] += dur
-            hour = int(str(ev.get("timestamp", "T00"))[11:13] or 0)
+            try:
+                hour = int(str(ev.get("timestamp", ""))[11:13] or 0)
+            except ValueError:
+                hour = 0
             hourly[hour][cat] += dur
         afk_min = sum(e.get("duration", 0) for e in payload.get("afk", [])) / 60.0
         if afk_min:
@@ -97,6 +104,14 @@ HTML = """<!doctype html>
 </main>
 <script>
 const DATA = __DATA__;
+// Escape untrusted strings (app/category/day names) before they reach
+// ECharts tooltips — tooltips render HTML, so raw names enable XSS.
+const enc = s => String(s).replace(/[&<>"']/g, c => "&#" + c.charCodeAt(0) + ";");
+const tip = p => {
+ const a = Array.isArray(p) ? p : [p];
+ const head = a[0] && a[0].axisValue != null ? enc(a[0].axisValue) + "<br>" : "";
+ return head + a.map(x => enc(x.seriesName || x.name || "") + ": " + x.value).join("<br>");
+};
 const days = Object.keys(DATA.days).sort();
 const sel = document.getElementById("day");
 days.forEach(d => sel.appendChild(new Option(d, d)));
@@ -109,7 +124,7 @@ const cats = DATA.order.filter(c => days.some(d => DATA.days[d].categories[c]));
 
 function hoursOption(d){
  const hours = Object.keys(DATA.days[d].hourly).map(Number);
- return {...base, tooltip:{trigger:"axis"}, xAxis:{type:"category",
+ return {...base, tooltip:{trigger:"axis", formatter:tip}, xAxis:{type:"category",
    data: hours.map(h => String(h).padStart(2,"0")+":00")},
    yAxis:{type:"value",name:"min"},
    series: cats.map(c => ({name:c, type:"bar", stack:"t", itemStyle:{color:DATA.palette[c]},
@@ -118,14 +133,14 @@ function hoursOption(d){
 }
 function catsOption(d){
  const c = DATA.days[d].categories;
- return {...base, tooltip:{trigger:"item"}, legend:{type:"scroll",textStyle:{color:"#9aa4b8"}},
+ return {...base, tooltip:{trigger:"item", formatter:tip}, legend:{type:"scroll",textStyle:{color:"#9aa4b8"}},
    series:[{type:"pie", radius:["40%","70%"], label:{color:"#e8ecf4"},
      data:Object.entries(c).map(([k,v])=>({name:k,value:v,itemStyle:{color:DATA.palette[k]}}))}],
    title:{text:"Where the day went", textStyle:{color:"#e8ecf4",fontSize:14}}};
 }
 function appsOption(d){
  const apps = DATA.days[d].top_apps;
- return {...base, tooltip:{trigger:"axis"},
+ return {...base, tooltip:{trigger:"axis", formatter:tip},
    xAxis:{type:"value",name:"min"}, yAxis:{type:"category",
    data:apps.map(a=>a[0]).reverse()},
    series:[{type:"bar", itemStyle:{color:"#4e79a7"},
@@ -133,7 +148,7 @@ function appsOption(d){
    title:{text:"Top apps", textStyle:{color:"#e8ecf4",fontSize:14}}};
 }
 function trendOption(){
- return {...base, tooltip:{trigger:"axis"},
+ return {...base, tooltip:{trigger:"axis", formatter:tip},
    xAxis:{type:"category",data:days}, yAxis:{type:"value",name:"focus %"},
    series:[{name:"focus score",type:"line",smooth:true,itemStyle:{color:"#59a14f"},
      areaStyle:{opacity:.15}, data:days.map(d=>DATA.days[d].focus_score)}],
@@ -160,7 +175,10 @@ def main() -> int:
     agg = aggregate(load_days())
     DIST.mkdir(exist_ok=True)
     out = DIST / "index.html"
-    out.write_text(HTML.replace("__DATA__", json.dumps(agg)))
+    # Escape "<" so a value containing "</script>" cannot break out of the
+    # inlined <script> block — json.dumps alone leaves it intact (XSS).
+    blob = json.dumps(agg).replace("<", "\\u003c")
+    out.write_text(HTML.replace("__DATA__", blob))
     log.info("wrote %s (%d days)", out, len(agg["days"]))
     return 0
 

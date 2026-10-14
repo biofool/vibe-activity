@@ -79,19 +79,21 @@ def categorize(payload: dict, offline: bool = False) -> dict:
 
     events = payload.get("events", [])
     need_llm = []
+    display2key = {}  # 'app | title' shown to the LLM -> unambiguous cache key
     for ev in events:
         app, title = ev.get("data", {}).get("app", ""), ev.get("data", {}).get("title", "")
-        key = f"{app} | {title}"
+        key = json.dumps([app, title])
         cat = regex_category(app, title, rules) or cache.get(key)
         if cat:
             ev["category"] = cat
         else:
-            need_llm.append(key)
+            need_llm.append(f"{app} | {title}")
+            display2key[f"{app} | {title}"] = key
 
     if need_llm and not offline:
         try:
             got = llm_categories(sorted(set(need_llm)), known)
-            cache.update(got)
+            cache.update({display2key[k]: v for k, v in got.items()})
             CACHE.write_text(json.dumps(cache, indent=2, sort_keys=True))
             log.info("llm categorized %d/%d titles", len(got), len(set(need_llm)))
         except Exception as e:  # noqa: BLE001 — fall back, never lose the run

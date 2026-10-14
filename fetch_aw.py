@@ -54,7 +54,8 @@ def fetch_day(d: date) -> dict:
     if afk:
         afk_events = [e for e in events(afk, start, end)
                       if e.get("data", {}).get("status") == "afk"]
-        payload["afk"] = [{"timestamp": e["timestamp"], "duration": e["duration"]}
+        payload["afk"] = [{"timestamp": e.get("timestamp", ""),
+                           "duration": e.get("duration", 0)}
                           for e in afk_events]
     else:
         payload["afk"] = []
