@@ -11,6 +11,7 @@ import json
 import logging
 import sys
 from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
 
 log = logging.getLogger("build_dashboard")
@@ -54,10 +55,16 @@ def aggregate(days: dict[str, dict]) -> dict:
             cat_min[cat] += dur
             app = ev.get("data", {}).get("app", "?")
             app_min[app] += dur
+            # Parse the ISO timestamp properly — slicing [11:13] reads the
+            # hour in whatever offset AW emitted, and malformed/missing
+            # values must not silently bucket at hour 0.
             try:
-                hour = int(str(ev.get("timestamp", ""))[11:13] or 0)
-            except ValueError:
-                hour = 0
+                ts = str(ev["timestamp"]).replace("Z", "+00:00")
+                hour = datetime.fromisoformat(ts).astimezone().hour
+            except (KeyError, ValueError):
+                log.warning("event with bad timestamp skipped from hourly: %r",
+                            ev.get("timestamp"))
+                continue
             hourly[hour][cat] += dur
         afk_min = sum(e.get("duration", 0) for e in payload.get("afk", [])) / 60.0
         if afk_min:

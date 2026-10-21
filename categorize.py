@@ -74,7 +74,10 @@ def llm_categories(keys: list[str], known_categories: list[str]) -> dict[str, st
 
 def categorize(payload: dict, offline: bool = False) -> dict:
     rules, afk_cat, fallback = load_rules()
-    known = [c for c, _ in rules] + [afk_cat, fallback]
+    # Window events can never be afk — exclude it so a stale/corrupt cached
+    # "afk" label can't shrink the focus denominator in the dashboard.
+    known = [c for c, _ in rules] + [fallback]
+    valid = set(known)
     cache = json.loads(CACHE.read_text()) if CACHE.exists() else {}
 
     events = payload.get("events", [])
@@ -84,7 +87,7 @@ def categorize(payload: dict, offline: bool = False) -> dict:
         app, title = ev.get("data", {}).get("app", ""), ev.get("data", {}).get("title", "")
         key = json.dumps([app, title])
         cat = regex_category(app, title, rules) or cache.get(key)
-        if cat:
+        if cat in valid:  # revalidate cached labels — drop unknown/afk
             ev["category"] = cat
         else:
             need_llm.append(f"{app} | {title}")

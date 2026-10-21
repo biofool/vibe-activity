@@ -48,12 +48,15 @@ def events(bucket: str, start: datetime, end: datetime) -> list:
 
 def fetch_day(d: date) -> dict:
     win, afk = find_buckets()
-    start = datetime(d.year, d.month, d.day, tzinfo=timezone.utc)
+    # Local midnight -> local midnight (events() converts to UTC for the
+    # query). Treating `d` as a UTC day shifts the window by the TZ offset.
+    start = datetime(d.year, d.month, d.day).astimezone()
     end = start + timedelta(days=1)
     payload = {"day": d.isoformat(), "events": events(win, start, end)}
     if afk:
         afk_events = [e for e in events(afk, start, end)
-                      if e.get("data", {}).get("status") == "afk"]
+                      if isinstance(e.get("data"), dict)
+                      and e["data"].get("status") == "afk"]
         payload["afk"] = [{"timestamp": e.get("timestamp", ""),
                            "duration": e.get("duration", 0)}
                           for e in afk_events]
