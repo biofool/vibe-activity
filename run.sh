@@ -11,12 +11,15 @@ DAYS=1
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --offline) OFFLINE="--offline"; shift ;;
-    --days) DAYS="$2"; shift 2 ;;
+    --days)
+      [[ "${2:-}" =~ ^[0-9]+$ ]] || { echo "--days needs a non-negative integer" >&2; exit 2; }
+      DAYS="$2"; shift 2 ;;
     *) echo "unknown arg: $1" >&2; exit 2 ;;
   esac
 done
 
 python3 fetch_aw.py --days "$DAYS"
+shopt -s nullglob
 for f in data/events_*.json; do
   python3 categorize.py $OFFLINE "$f"
 done
